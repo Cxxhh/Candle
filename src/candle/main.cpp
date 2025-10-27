@@ -28,7 +28,15 @@ void loadTranslationsForLocale(const QString &locale, QCoreApplication &app)
     if (!dir.exists())
         return;
 
-    for (const QString &fileName : dir.entryList(QStringList{ "*_" + locale + ".qm" }, QDir::Files))
+    const auto fileNames = dir.entryList(QStringList{ "*_" + locale + ".qm" }, QDir::Files);
+
+    if (fileNames.isEmpty() && locale.contains('_'))
+    {
+        loadTranslationsForLocale(locale.left(locale.indexOf('_')), app);
+        return;
+    }
+
+    for (const QString &fileName : fileNames)
     {
         auto tr = new QTranslator(&app);
 
@@ -62,9 +70,21 @@ int main(int argc, char *argv[])
 #endif
 
     QSettings set;
-    QString locale = set.value("General/language", "en").toString();
+    QString locale = set.value("General/language", "zh_CN").toString();
 
-    loadTranslationsForLocale(locale, a);
+    if (locale.isEmpty())
+        locale = "zh_CN";
+
+    if (locale == "system")
+        locale = QLocale::system().name();
+    else if (locale == "zh")
+        locale = "zh_CN";
+
+    QLocale::setDefault(QLocale(locale));
+
+    loadTranslationsForLocale("en", a);
+    if (locale != "en")
+        loadTranslationsForLocale(locale, a);
 
 #ifdef UNIX
     if (!styleOverrided) foreach (QString str, QStyleFactory::keys()) {

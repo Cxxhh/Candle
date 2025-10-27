@@ -2918,7 +2918,7 @@ void frmMain::loadSettings()
     set.beginGroup("General");
 
     // Language
-    m_settings->setLanguage(set.value("language", "en").toString());
+    m_settings->setLanguage(set.value("language", "zh_CN").toString());
 
     // Create help
     m_help = new frmHelp(m_settings->language());
