@@ -87,14 +87,22 @@ frmSettings::frmSettings(QWidget *parent) :
 
     // Languages
     QDir d(qApp->applicationDirPath() + "/translations");
-    QStringList fl = QStringList() << "candle_*.qm";
-    QStringList tl = d.entryList(fl, QDir::Files);
+    const QStringList fl = { "candle_*.qm" };
+    const QStringList tl = d.entryList(fl, QDir::Files);
     QRegExp fx("_([^\\.]+)");
-    foreach (const QString &t, tl) {
-        if (fx.indexIn(t) != -1) {
-            QLocale l(fx.cap(1));
-            ui->cboLanguage->addItem(l.nativeLanguageName(), l.name().left(2));
-        }
+    for (const QString &t : tl) {
+        if (fx.indexIn(t) == -1)
+            continue;
+
+        const QString localeName = fx.cap(1);
+        if (ui->cboLanguage->findData(localeName) != -1)
+            continue;
+
+        QLocale l(localeName);
+        QString label = l.nativeLanguageName();
+        if (label.isEmpty())
+            label = localeName;
+        ui->cboLanguage->addItem(label, localeName);
     }
 }
 
@@ -942,7 +950,7 @@ void frmSettings::setDefaultSettings()
     ui->chkToolChangePause->setChecked(false);
     ui->chkToolChangeUseCommands->setChecked(false);
     ui->chkToolChangeUseCommandsConfirm->setChecked(false);
-    setLanguage("en");
+    setLanguage("zh_CN");
 }
 
 void frmSettings::on_radDrawModeVectors_toggled(bool checked)

@@ -110,6 +110,11 @@ cmake --install .
 
 Executable can be found in `~/programs/Candle` directory.
 
+Localization
+------------
+
+For a step-by-step walkthrough on translating Candle into Simplified Chinese (including generating Qt translation files and localizing the bundled help), see [wiki/zh_CN_localization.md](wiki/zh_CN_localization.md).
+
 Before creating new issue
 ------
 Candle works with CNC controlled by GRBL firmware, many problems can be solved by using proper version of GRBL, using proper configuration.
